@@ -18,8 +18,7 @@ class Generator:
 
         self.abnormal = False
         self.abnormal_time = -1;
-        self.wave_delta_multiplier = 1
-        self.wind_delta_multiplier = 1
+        self.delta_multiplier = 1
 
         self.state = "normal"
 
@@ -28,10 +27,8 @@ class Generator:
     def _GetDirectionDelta(self):
         if self.iteration % 5 == 0:
             if random.uniform(0,1) > 0.5:
-                self.wave_delta_multiplier *= -1
-            if random.uniform(0,1) > 0.5:
-                self.wind_delta_multiplier *= -1
-
+                self.delta_multiplier *= -1
+           
         return math.pi/6 * math.sin(0.02 * self.iteration)
 
     def _GetPoints(self, cx, cy, side_length, theta, n):
@@ -63,8 +60,8 @@ class Generator:
                 self.abnormal = False
                 self.wind_direction = self.wave_direction
 
-        self.wave_direction += (self._GetDirectionDelta()*self.wave_delta_multiplier)
-        self.wind_direction += (self._GetDirectionDelta()*self.wind_delta_multiplier)
+        self.wave_direction += (self._GetDirectionDelta()*self.delta_multiplier)
+        self.wind_direction += (self._GetDirectionDelta()*self.delta_multiplier)
         self.wave_direction %= (2*math.pi)
         self.wind_direction %= (2*math.pi)
 
@@ -99,13 +96,13 @@ class Generator:
         kk += self.vessel_height/2
         cx = kk*math.cos(self.wave_direction)
         cy = kk*math.sin(self.wave_direction)
-        wave_point = self._GetPoints(cx, cy, 50, self.wave_direction, self.n_wave_sensor)
+        wave_points = self._GetPoints(cx, cy, 50, self.wave_direction, self.n_wave_sensor)
 
         kk = random.uniform(k, 2*k)
         kk += self.vessel_height/2
         cx = kk*math.cos(self.wind_direction)
         cy = kk*math.sin(self.wind_direction)
-        wind_point = self._GetPoints(cx, cy, 50, self.wind_direction, self.n_wind_sensor)      
+        wind_points = self._GetPoints(cx, cy, 50, self.wind_direction, self.n_wind_sensor)      
 
         self.iteration += 1
         if self.iteration == 131: 
@@ -115,11 +112,11 @@ class Generator:
             {
                 "wave" : {
                     "speed" : self.wave_speed,
-                    "points" : wave_point
+                    "points" : wave_points
                 },
                 "wind" : {
                     "speed" : self.wind_speed,
-                    "point" : wind_point
+                    "points" : wind_points
                 }
             }
         )
