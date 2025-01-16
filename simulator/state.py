@@ -4,12 +4,11 @@ import math
 import random
 
 class State:
-    async def INITIALIZE(self, Vessel_Direction, Thruster_Power):
-        print("INITIALIZE")
+    async def INITIALIZE(self, n):
         self.LOCK = asyncio.Lock()
-        self.Vessel_Direction = Vessel_Direction
-        self.Thruster_Power = Thruster_Power
-        self.Thruster_Fault = [0 for i in range(len(self.Thruster_Power))]
+        self.Vessel_Direction = random.uniform(0, 2*math.pi)
+        self.Thruster_Power = [random.uniform(0,100) for i in range(n)]
+        self.Thruster_Fault = [0 for i in range(n)]
 
         self.Wave_Direction = random.uniform(0, 2*math.pi)
         self.Curr_Direction = random.uniform(0, 2*math.pi)
