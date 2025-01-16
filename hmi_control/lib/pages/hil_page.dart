@@ -27,8 +27,9 @@ class _HilPageState extends State<HilPage> {
   }
 
   void _logger(String message) {
+    String time = DateTime.now().toString();
     setState(() {
-      log.add(Text(message));
+      log.add(Text('[$time] : $message'));
     });
   }
 
@@ -43,6 +44,12 @@ class _HilPageState extends State<HilPage> {
     _server.disconnect();
     setState(() {
       _isConnected = false;
+    });
+  }
+
+  void _clearLog() {
+    setState(() {
+      log.clear();
     });
   }
 
@@ -102,6 +109,7 @@ class _HilPageState extends State<HilPage> {
             ),
             const SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: _isConnected ? _disconnect : _connect,
@@ -117,12 +125,52 @@ class _HilPageState extends State<HilPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.zero,
                       side: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  child: _isConnected ? Text("DISCONNECT") : Text('CONNECT'),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(200, 60),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Courier',
+                    ),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                      side: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  child: Text("TEST"),
+                ),
+                ElevatedButton(
+                  onPressed: _clearLog,
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(200, 60),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Courier',
+                    ),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                      side: const BorderSide(
                         color: Colors.white, // Outline color
                         width: 2.0, // Outline thickness
                       ),
                     ),
                   ),
-                  child: _isConnected ? Text("DISCONNECT") : Text('CONNECT'),
+                  child: Text("CLEAR LOG"),
                 ),
               ],
             ),

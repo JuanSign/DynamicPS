@@ -11,9 +11,11 @@ class SocketServer {
 
   Future<void> connect(String host, int port, String type) async {
     try {
+      final timer = Stopwatch()..start();
+      LOG("Attempting to connect.");
       _socket = await Socket.connect(host, port);
-      LOG("CONNECTED");
       _socket.write(type);
+      LOG("Connected in ${timer.elapsedMilliseconds} milliseconds.");
 
       _socket.listen(
         (data) {
@@ -24,7 +26,7 @@ class SocketServer {
           LOG(error);
         },
         onDone: () {
-          LOG('Connection closed');
+          LOG('Connection closed.');
         },
       );
     } catch (e) {
