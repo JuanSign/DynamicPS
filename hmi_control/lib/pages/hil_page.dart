@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmi_control/utils/socket_server.dart';
 
 class HilPage extends StatefulWidget {
   const HilPage({super.key});
@@ -14,7 +15,36 @@ class _HilPageState extends State<HilPage> {
   // ignore: non_constant_identifier_names
   final TextEditingController _Port = TextEditingController();
 
-  List<Widget> dynamicItems = [];
+  late final SocketServer _server;
+  bool _isConnected = false;
+
+  List<Widget> log = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _server = SocketServer(_logger);
+  }
+
+  void _logger(String message) {
+    setState(() {
+      log.add(Text(message));
+    });
+  }
+
+  void _connect() async {
+    await _server.connect(_IPAddress.text, int.parse(_Port.text), 'hil');
+    setState(() {
+      _isConnected = true;
+    });
+  }
+
+  void _disconnect() {
+    _server.disconnect();
+    setState(() {
+      _isConnected = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,31 +101,41 @@ class _HilPageState extends State<HilPage> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                fixedSize: Size(200, 60),
-                textStyle: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Courier',
-                ),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                  side: const BorderSide(
-                    color: Colors.white, // Outline color
-                    width: 2.0, // Outline thickness
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _isConnected ? _disconnect : _connect,
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(200, 60),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Courier',
+                    ),
+                    foregroundColor: Colors.white,
+                    backgroundColor: _isConnected ? Colors.red : Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                      side: const BorderSide(
+                        color: Colors.white, // Outline color
+                        width: 2.0, // Outline thickness
+                      ),
+                    ),
                   ),
+                  child: _isConnected ? Text("DISCONNECT") : Text('CONNECT'),
                 ),
-              ),
-              child: Text('CONNECT'),
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: dynamicItems,
+              child: SizedBox(
+                width: double.infinity,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: log,
+                  ),
                 ),
               ),
             ),

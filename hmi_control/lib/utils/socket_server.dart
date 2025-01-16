@@ -4,50 +4,44 @@ import 'dart:async';
 
 class SocketServer {
   late Socket _socket;
-  late StreamController<String> _messageController;
+  // ignore: non_constant_identifier_names
+  final Function(String) LOG;
 
-  SocketServer() {
-    _messageController = StreamController<String>.broadcast();
-  }
+  SocketServer(this.LOG);
 
-  Future<void> connect(String host, int port) async {
+  Future<void> connect(String host, int port, String type) async {
     try {
       _socket = await Socket.connect(host, port);
-      print('Connected to server');
+      LOG("CONNECTED");
+      _socket.write(type);
 
       _socket.listen(
         (data) {
           final message = utf8.decode(data);
-          _messageController.add(message);
+          LOG(message);
         },
         onError: (error) {
-          print('Error receiving data: $error');
-          _messageController.addError(error);
+          LOG(error);
         },
         onDone: () {
-          print('Connection closed');
-          _messageController.close();
+          LOG('Connection closed');
         },
       );
     } catch (e) {
-      print('Error connecting to server: $e');
-      _messageController.addError(e);
+      LOG(e.toString());
     }
   }
 
   void send(String message) {
     if (_socket.remoteAddress.address.isNotEmpty) {
       _socket.write(message);
-      print('Sent: $message');
     } else {
-      print('Socket is not connected');
+      LOG('Socket is not connected.');
     }
   }
 
-  Stream<String> get messages => _messageController.stream;
-
   void disconnect() {
     _socket.close();
-    print('Disconnected from server');
+    LOG('Disconnected from server');
   }
 }
