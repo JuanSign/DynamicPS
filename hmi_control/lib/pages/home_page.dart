@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmi_control/pages/control_page.dart';
 import 'package:hmi_control/pages/hil_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -49,7 +50,12 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(width: 20),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ControlPage()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(200, 60),
                 textStyle: TextStyle(
